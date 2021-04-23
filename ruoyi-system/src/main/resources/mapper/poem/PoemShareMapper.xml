@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.poem.mapper.PoemShareMapper">
+    
+    <resultMap type="PoemShare" id="PoemShareResult">
+        <result property="id"    column="ID"    />
+        <result property="poemId"    column="poem_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="comment"    column="comment"    />
+    </resultMap>
+
+    <resultMap id="PoemSharePoemInfoResult" type="PoemShare" extends="PoemShareResult">
+        <collection property="poemInfoList" notNullColumn="ID" javaType="java.util.List" resultMap="PoemInfoResult" />
+    </resultMap>
+
+    <resultMap type="PoemInfo" id="PoemInfoResult">
+        <result property="id"    column="ID"    />
+        <result property="poemName"    column="poem_name"    />
+        <result property="poemDynasty"    column="poem_dynasty"    />
+        <result property="poemWriterId"    column="poem_writer_id"    />
+        <result property="poemContent"    column="poem_content"    />
+        <result property="poemAnnotation"    column="poem_annotation"    />
+        <result property="poemAppreciation"    column="poem_appreciation"    />
+        <result property="poemSentiment"    column="poem_sentiment"    />
+        <result property="picture"    column="picture"    />
+        <result property="poemTypeId"    column="poem_type_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="poemUploadTime"    column="poem_upload_time"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditorId"    column="auditor_id"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectPoemShareVo">
+        select ID, poem_id, user_id, del_flag, comment from poem_share
+    </sql>
+
+    <select id="selectPoemShareList" parameterType="PoemShare" resultMap="PoemShareResult">
+        <include refid="selectPoemShareVo"/>
+        <where>  
+            <if test="poemId != null "> and poem_id = #{poemId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="comment != null  and comment != ''"> and comment = #{comment}</if>
+        </where>
+    </select>
+    
+    <select id="selectPoemShareById" parameterType="Long" resultMap="PoemSharePoemInfoResult">
+        select a.ID, a.poem_id, a.user_id, a.del_flag, a.comment,
+            b.ID, b.poem_name, b.poem_dynasty, b.poem_writer_id, b.poem_content, b.poem_annotation, b.poem_appreciation, b.poem_sentiment, b.picture, b.poem_type_id, b.user_name, b.poem_upload_time, b.audit_status, b.auditor_id, b.del_flag
+        from poem_share a
+        left join poem_info b on b.ID = a.ID
+        where a.ID = #{id}
+    </select>
+        
+    <insert id="insertPoemShare" parameterType="PoemShare">
+        insert into poem_share
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="poemId != null">poem_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="comment != null">comment,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="poemId != null">#{poemId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="comment != null">#{comment},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePoemShare" parameterType="PoemShare">
+        update poem_share
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="poemId != null">poem_id = #{poemId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="comment != null">comment = #{comment},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deletePoemShareById" parameterType="Long">
+        delete from poem_share where ID = #{id}
+    </delete>
+
+    <delete id="deletePoemShareByIds" parameterType="String">
+        delete from poem_share where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deletePoemInfoByIDs" parameterType="String">
+        delete from poem_info where ID in 
+        <foreach item="iD" collection="array" open="(" separator="," close=")">
+            #{iD}
+        </foreach>
+    </delete>
+
+    <delete id="deletePoemInfoByID" parameterType="Long">
+        delete from poem_info where ID = #{iD}
+    </delete>
+
+    <insert id="batchPoemInfo">
+        insert into poem_info( ID, poem_name, poem_dynasty, poem_writer_id, poem_content, poem_annotation, poem_appreciation, poem_sentiment, picture, poem_type_id, user_name, poem_upload_time, audit_status, auditor_id, del_flag) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.poemName}, #{item.poemDynasty}, #{item.poemWriterId}, #{item.poemContent}, #{item.poemAnnotation}, #{item.poemAppreciation}, #{item.poemSentiment}, #{item.picture}, #{item.poemTypeId}, #{item.userName}, #{item.poemUploadTime}, #{item.auditStatus}, #{item.auditorId}, #{item.delFlag})
+        </foreach>
+    </insert>
+</mapper>

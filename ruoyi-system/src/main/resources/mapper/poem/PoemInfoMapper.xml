@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.poem.mapper.PoemInfoMapper">
+    
+    <resultMap type="PoemInfo" id="PoemInfoResult">
+        <result property="id"    column="ID"    />
+        <result property="poemName"    column="poem_name"    />
+        <result property="poemDynasty"    column="poem_dynasty"    />
+        <result property="poemWriterId"    column="poem_writer_id"    />
+        <result property="poemContent"    column="poem_content"    />
+        <result property="poemAnnotation"    column="poem_annotation"    />
+        <result property="poemAppreciation"    column="poem_appreciation"    />
+        <result property="poemSentiment"    column="poem_sentiment"    />
+        <result property="picture"    column="picture"    />
+        <result property="poemTypeId"    column="poem_type_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="poemUploadTime"    column="poem_upload_time"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditorId"    column="auditor_id"    />
+        <result property="praseCount"    column="prase_count"    />
+        <result property="commentCount"    column="comment_count"    />
+        <result property="collectCount"    column="collect_count"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectPoemInfoVo">
+        select ID, poem_name, poem_dynasty, poem_writer_id, poem_content, poem_annotation, poem_appreciation, poem_sentiment, picture, poem_type_id, user_name, poem_upload_time, audit_status, auditor_id, del_flag from poem_info
+    </sql>
+
+    <select id="selectPoemInfoList" parameterType="PoemInfo" resultMap="PoemInfoResult">
+        <include refid="selectPoemInfoVo"/>
+        <where>  
+            <if test="poemName != null  and poemName != ''"> and poem_name like concat('%', #{poemName}, '%')</if>
+            <if test="poemDynasty != null  and poemDynasty != ''"> and poem_dynasty like concat('%',  #{poemDynasty}, '%')</if>
+            <if test="poemWriterId != null  and poemWriterId != ''"> and poem_writer_id like concat('%', #{poemWriterId}, '%')</if>
+            <if test="poemTypeId != null  and poemTypeId != ''"> and poem_type_id = #{poemTypeId}</if>
+            <if test="userName != 'admin' and userName != null  and userName != ''"> and user_name = #{userName}</if>
+            <if test="auditStatus != null and auditStatus != '' or auditStatus == 0 "> and audit_status = #{auditStatus} </if>
+            and del_flag = 0
+        </where>
+    </select>
+    
+    <select id="selectPoemInfoById" parameterType="String" resultMap="PoemInfoResult">
+        <include refid="selectPoemInfoVo"/>
+        where ID = #{id} and del_flag = 0
+    </select>
+
+    <select id="selectPoemInfoByLabel1" parameterType="String" resultType="String">
+        select id from poem_info
+        where del_flag = 0
+        and poem_name like concat('%', #{label}, '%')
+        and poem_content like concat('%', #{label}, '%')
+    </select>
+
+    <select id="selectPoemInfoByLabel2" parameterType="String" resultType="String">
+        select distinct (id) from poem_label_info
+        where label like concat('%', #{label}, '%')
+    </select>
+
+    <select id="selectPoemInfoByNameList" parameterType="String" resultMap="PoemInfoResult">
+        <include refid="selectPoemInfoVo" />
+        where id in
+        <foreach item="id1" collection="array" open="(" separator="," close=")">
+            #{id1}
+        </foreach> or id in
+        <foreach item="id2" collection="array" open="(" separator="," close=")">
+            #{id2}
+        </foreach>
+    </select>
+
+    <select id="checkPoemNameUnique" parameterType="String" resultType="int">
+        select count(1) from poem_info where poem_name = #{poemName} and del_flag=0 and audit_status != 0 limit 1
+    </select>
+
+    <select id="selectPoemInfoByName" parameterType="String" resultType="Long">
+        select id from poem_info
+        where poem_name = #{poemName} and del_flag=0
+    </select>
+
+    <insert id="insertPoemInfo" parameterType="PoemInfo">
+        insert into poem_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="poemName != null">poem_name,</if>
+            <if test="poemDynasty != null">poem_dynasty,</if>
+            <if test="poemWriterId != null">poem_writer_id,</if>
+            <if test="poemContent != null">poem_content,</if>
+            <if test="poemAnnotation != null">poem_annotation,</if>
+            <if test="poemAppreciation != null">poem_appreciation,</if>
+            <if test="poemSentiment != null">poem_sentiment,</if>
+            <if test="picture != null">picture,</if>
+            <if test="poemTypeId != null">poem_type_id,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="poemUploadTime != null">poem_upload_time,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="poemName != null">#{poemName},</if>
+            <if test="poemDynasty != null">#{poemDynasty},</if>
+            <if test="poemWriterId != null">#{poemWriterId},</if>
+            <if test="poemContent != null">#{poemContent},</if>
+            <if test="poemAnnotation != null">#{poemAnnotation},</if>
+            <if test="poemAppreciation != null">#{poemAppreciation},</if>
+            <if test="poemSentiment != null">#{poemSentiment},</if>
+            <if test="picture != null">#{picture},</if>
+            <if test="poemTypeId != null">#{poemTypeId},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="poemUploadTime != null">sysdate(),</if>
+            <if test="auditStatus != null">0,</if>
+            <if test="delFlag != null">0,</if>
+         </trim>
+    </insert>
+
+    <update id="updatePoemInfo" parameterType="PoemInfo">
+        update poem_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="poemName != null">poem_name = #{poemName},</if>
+            <if test="poemDynasty != null">poem_dynasty = #{poemDynasty},</if>
+            <if test="poemWriterId != null">poem_writer_id = #{poemWriterId},</if>
+            <if test="poemContent != null">poem_content = #{poemContent},</if>
+            <if test="poemAnnotation != null">poem_annotation = #{poemAnnotation},</if>
+            <if test="poemAppreciation != null">poem_appreciation = #{poemAppreciation},</if>
+            <if test="poemSentiment != null">poem_sentiment = #{poemSentiment},</if>
+            <if test="picture != null">picture = #{picture},</if>
+            <if test="poemTypeId != null">poem_type_id = #{poemTypeId},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="poemUploadTime != null">poem_upload_time = sysdate(),</if>
+        </trim>
+        where ID = #{id} and del_flag = 0
+    </update>
+
+    <update id="uploadPoemInfoById" parameterType="String">
+        update poem_info set audit_status = 1
+        where del_flag = 0 and ID =  #{id}
+    </update>
+
+    <update id="undoPoemInfoById" parameterType="String">
+        update poem_info set audit_status = 0
+        where del_flag = 0 and ID =  #{id}
+    </update>
+    
+    <update id="deletePoemInfoById" parameterType="String">
+        update poem_info
+        set del_flag = 1
+        where ID = #{id} and del_flag = 0
+    </update>
+
+    <update id="deletePoemInfoByIds" parameterType="String">
+        update poem_info
+        set del_flag = 1
+        where del_flag = 0 and ID in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    
+    <select id="selectPoemInfoByLabel" parameterType="String" resultMap="PoemInfoResult">
+        select poem_id as id from poem_label_info
+        where
+        <foreach item="label" collection="array" separator=" and ">
+            #{label}
+        </foreach>
+    </select>
+    
+</mapper>

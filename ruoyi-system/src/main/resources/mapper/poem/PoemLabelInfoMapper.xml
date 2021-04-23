@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.poem.mapper.PoemLabelInfoMapper">
+    
+    <resultMap type="PoemLabelInfo" id="PoemLabelInfoResult">
+        <result property="id"    column="id"    />
+        <result property="poemId"    column="poem_id"    />
+        <result property="label"    column="label"    />
+        <result property="poemName"    column="poem_name"    />
+    </resultMap>
+
+    <sql id="selectPoemLabelInfoVo">
+        select a.id, a.poem_id,b.poem_name,a.label from poem_label_info a left join poem_info b on a.poem_id = b.id
+    </sql>
+
+    <select id="selectPoemLabelInfoList" parameterType="PoemLabelInfo" resultMap="PoemLabelInfoResult">
+        <include refid="selectPoemLabelInfoVo"/>
+        <where>
+            <if test="poemName != null "> and b.poem_name like concat('%', #{poemName}, '%')</if>
+            <if test="poemId != null "> and a.poem_id = #{poemId}</if>
+            <if test="label != null  and label != ''"> and a.label like concat('%',#{label}, '%') </if>
+             and b.del_flag = 0
+        </where>
+    </select>
+    
+    <select id="selectPoemLabelInfoById" parameterType="Long" resultMap="PoemLabelInfoResult">
+        <include refid="selectPoemLabelInfoVo"/>
+        where a.id = #{id} and b.del_flag = 0
+    </select>
+        
+    <insert id="insertPoemLabelInfo" parameterType="PoemLabelInfo">
+        insert into poem_label_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="poemId != null">poem_id,</if>
+            <if test="label != null">label,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="poemId != null">#{poemId},</if>
+            <if test="label != null">#{label},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePoemLabelInfo" parameterType="PoemLabelInfo">
+        update poem_label_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="poemId != null">poem_id = #{poemId},</if>
+            <if test="label != null">label = #{label},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePoemLabelInfoById" parameterType="Long">
+        delete from poem_label_info where id = #{id}
+    </delete>
+
+    <delete id="deletePoemLabelInfoByIds" parameterType="String">
+        delete from poem_label_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

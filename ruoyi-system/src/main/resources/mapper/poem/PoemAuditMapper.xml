@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.poem.mapper.PoemAuditMapper">
+    
+    <resultMap type="PoemInfo" id="PoemInfoResult">
+        <result property="id"    column="ID"    />
+        <result property="poemName"    column="poem_name"    />
+        <result property="poemDynasty"    column="poem_dynasty"    />
+        <result property="poemWriterId"    column="poem_writer_id"    />
+        <result property="poemContent"    column="poem_content"    />
+        <result property="poemAnnotation"    column="poem_annotation"    />
+        <result property="poemAppreciation"    column="poem_appreciation"    />
+        <result property="poemSentiment"    column="poem_sentiment"    />
+        <result property="picture"    column="picture"    />
+        <result property="poemTypeId"    column="poem_type_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="poemUploadTime"    column="poem_upload_time"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditorId"    column="auditor_id"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectPoemInfoVo">
+        select ID, poem_name, poem_dynasty, poem_writer_id, poem_content, poem_annotation, poem_appreciation, poem_sentiment, picture, poem_type_id, user_name, poem_upload_time, audit_status, auditor_id, del_flag from poem_info
+    </sql>
+
+    <select id="selectPoemInfoList" parameterType="PoemInfo" resultMap="PoemInfoResult">
+        <include refid="selectPoemInfoVo"/>
+        <where>  
+            <if test="poemName != null  and poemName != ''"> and poem_name like concat('%', #{poemName}, '%')</if>
+            <if test="poemDynasty != null  and poemDynasty != ''"> and poem_dynasty like concat('%',  #{poemDynasty}, '%')</if>
+            <if test="poemWriterId != null  and poemWriterId != ''"> and poem_writer_id like concat('%', #{poemWriterId}, '%')</if>
+            <if test="poemTypeId != null  and poemTypeId != ''"> and poem_type_id = #{poemTypeId}</if>
+            <if test="userName != 'admin' and userName != null  and userName != ''"> and user_name = #{userName}</if>
+            <if test="auditStatus == null "> and audit_status = 1 or audit_status = 3 </if>
+            <if test="auditStatus != null and auditStatus != '' "> and audit_status = #{auditStatus}</if>
+            and del_flag = 0
+        </where>
+    </select>
+    
+    <select id="selectPoemInfoById" parameterType="String" resultMap="PoemInfoResult">
+        <include refid="selectPoemInfoVo"/>
+        where ID = #{id} and del_flag = 0
+    </select>
+
+
+    <update id="updatePoemInfo" parameterType="PoemInfo">
+        update poem_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="auditorId != null">auditor_id = #{auditorId},</if>
+        </trim>
+        where ID = #{id} and del_flag = 0
+    </update>
+    <update id="auditPoemInfoById">
+        update poem_info set audit_status = 3 , auditor_id = #{auditorId}
+        where del_flag = 0 and ID =  #{id}
+    </update>
+
+    <update id="reauditPoemInfoById">
+        update poem_info set audit_status = 2 , auditor_id = #{auditorId}
+        where del_flag = 0 and ID =  #{id}
+    </update>
+
+    <delete id="deletePoemInfoById" parameterType="String">
+        delete from poem_info where ID = #{id}
+    </delete>
+
+</mapper>
