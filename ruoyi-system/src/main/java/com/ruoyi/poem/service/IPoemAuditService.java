@@ -27,6 +27,8 @@ public interface IPoemAuditService
      */
     public List<PoemInfo> selectPoemInfoList(PoemInfo poemInfo);
 
+
+
     public int auditPoemInfoById(Long id);
 
     public int reauditPoemInfoById(Long id);

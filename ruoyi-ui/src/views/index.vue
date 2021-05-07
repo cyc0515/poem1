@@ -109,7 +109,7 @@
           <div class="body">
   <div>
 
-    <iframe scrolling="no" src="https://tianqiapi.com/api.php?style=tx&skin=grape&city=济南" frameborder="0" width="100%" height="30" allowtransparency="true"></iframe>
+    <iframe scrolling="no" src="https://tianqiapi.com/api.php?style=tx&skin=grape&city=青岛" frameborder="0" width="100%" height="30" allowtransparency="true"></iframe>
   </div>
            
           </div>

@@ -32,7 +32,9 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 15px 25px 0px;">记住密码</el-checkbox>
+      
+
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
@@ -45,11 +47,17 @@
           <span v-else>登 录 中...</span>
         </el-button>
       </el-form-item>
+
+      <!-- <el-button type="text" style="margin:0px 5px 0px 0px;">暂不登录，以游客身份访问</el-button> -->
+      <el-button type="text" @click="gotoregister" style="margin:0px 0px 0px 290px;">立即注册</el-button>
+      
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
       <span>Copyright © 2020-2021 石榴科技 All Rights Reserved.</span>
     </div>
+
+    
   </div>
 </template>
 
@@ -102,6 +110,14 @@ export default {
         this.codeUrl = "data:image/gif;base64," + res.img;
         this.loginForm.uuid = res.uuid;
       });
+    },
+    gotoregister(){
+
+          //点击跳转至上次浏览页面
+         // this.$router.go(-1)
+ 
+          //指定跳转地址
+          this.$router.push('/register')
     },
     getCookie() {
       const username = Cookies.get("username");

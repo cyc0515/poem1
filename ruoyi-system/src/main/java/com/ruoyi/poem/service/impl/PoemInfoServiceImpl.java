@@ -45,6 +45,12 @@ public class PoemInfoServiceImpl implements IPoemInfoService
         return poemInfoMapper.selectPoemInfoList(poemInfo);
     }
 
+    @Override
+    public List<PoemInfo> selectPoemInfoListIndex(PoemInfo poemInfo)
+    {
+
+        return poemInfoMapper.selectPoemInfoList(poemInfo);
+    }
     /**
      * 新增诗词信息
      * 

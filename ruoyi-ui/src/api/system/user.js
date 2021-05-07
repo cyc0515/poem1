@@ -27,6 +27,14 @@ export function addUser(data) {
   })
 }
 
+export function addUser1(data) {
+  return request({
+    url: '/system/user/register',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改用户
 export function updateUser(data) {
   return request({

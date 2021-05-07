@@ -27,6 +27,8 @@ public interface IPoemInfoService
      */
     public List<PoemInfo> selectPoemInfoList(PoemInfo poemInfo);
 
+
+    public List<PoemInfo> selectPoemInfoListIndex(PoemInfo poemInfo);
     /**
      * 新增诗词信息
      * 
